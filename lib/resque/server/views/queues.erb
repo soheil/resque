@@ -14,7 +14,7 @@
       <th>Class</th>
       <th>Args</th>
     </tr>
-    <% for job in (jobs = (params[:search] ? resque.search(queue, params[:search]) : resque.peek(queue, start, 20))) %>
+    <% for job in (jobs = (params[:search].blank? ? resque.peek(queue, start, 20) : resque.search(queue, params[:search]))) %>
     <tr>
       <td class='class'><%= job['class'] %></td>
       <td class='args'><%=h job['args'].inspect %></td>
