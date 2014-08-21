@@ -198,6 +198,10 @@ module Resque
     list_range("queue:#{queue}", start, count)
   end
 
+  def search(queue, keyword)
+    redis.lrange("queue:#{queue}", 0, 10000).select{|e| e =~ /#{keyword}/i}.map{|e| decode e }
+  end
+
   # Does the dirty work of fetching a range of items from a Redis list
   # and converting them into Ruby objects.
   def list_range(key, start = 0, count = 1)

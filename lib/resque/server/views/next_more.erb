@@ -7,11 +7,18 @@
     <a href="<%= current_page %>?start=<%= start - per_page %>" class='less'>&laquo; Previous</a>
   <% end %>
 
-  <% (0...(size / per_page.to_f).ceil).each do |page_num| %>
+  <% page_count = (size / per_page.to_f).ceil %>
+  <% (0...page_count).each do |page_num| %>
     <% if start == page_num * per_page %>
        <%= page_num + 1 %>
-    <% else %>
+    <% elsif page_count < 50 || (page_count > 50 && page_num < 25) || (page_count > 50 && page_num > page_count - 25) %>
       <a href="<%= current_page %>?start=<%= page_num * per_page %>"> <%= page_num + 1 %></a>
+      <% if page_count > 50 && page_num == 25 - 1 %>
+        ...
+      <% end %>
+    <% end %>
+    <% if page_count > 50 && page_num == page_count - 25 - 1 %>
+      ...
     <% end %>
   <% end %>
 

@@ -2,17 +2,19 @@
 
 <% if queue = params[:id] %>
 
-  <h1>Pending jobs on <span class='hl'><%= queue %></span></h1>
+  <h1 style="display: inline-block;">Pending jobs on <span class='hl'><%= queue %></span></h1>
+  <input value="<%= params[:search] %>" name="search" type="search" placeholder="search" style="margin-left: 50px; width: 500px;" onkeypress="event.keyCode == 13 && this.value.length > 1 && (document.location = '?search=' + this.value)">
   <form method="POST" action="<%=u "/queues/#{queue}/remove" %>" class='remove-queue'>
     <input type='submit' name='' value='Remove Queue' onclick='return confirm("Are you absolutely sure? This cannot be undone.");' />
   </form>
   <p class='sub'>Showing <%= start = params[:start].to_i %> to <%= start + 20 %> of <b><%=size = resque.size(queue)%></b> jobs</p>
+  <%= partial :next_more, :start => start, :size => size, :per_page => 20 if params[:search].blank? %>
   <table class='jobs'>
     <tr>
       <th>Class</th>
       <th>Args</th>
     </tr>
-    <% for job in (jobs = resque.peek(queue, start, 20)) %>
+    <% for job in (jobs = (params[:search] ? resque.search(queue, params[:search]) : resque.peek(queue, start, 20))) %>
     <tr>
       <td class='class'><%= job['class'] %></td>
       <td class='args'><%=h job['args'].inspect %></td>
@@ -24,7 +26,6 @@
     </tr>
     <% end %>
   </table>
-  <%= partial :next_more, :start => start, :size => size, :per_page => 20 %>
 <% else %>
 
   <h1 class='wi'>Queues</h1>
